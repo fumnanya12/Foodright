@@ -106,7 +106,7 @@ section aside {
   margin: 1rem;
   padding: 1.25rem;
   width: var(--width-card);
-  height: 400px;
+  height: auto;
 }
 
 section aside:hover {
@@ -598,12 +598,17 @@ section h2{
 
 
 #section-1 {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
   width: 100%;
+
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
+}
+#section-1 aside{
+  width: 80%;
 }
 #section-1 aside:hover{
   transform: translateY(-4px);
@@ -641,7 +646,7 @@ section h2{
 
 }
 .meal-details{
-  height: 890px;
+  height: auto;
 }
 .meal-details img{
   width: 100%;
@@ -659,4 +664,23 @@ section h2{
   display: flex;
   gap: 4px;
   margin-bottom: 20px;
+}
+
+/* edit */
+.edit-details{
+ width: 700px;
+}
+
+.edit-details img{
+   width: 100%;
+  height: 290px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  color: black;
+}
+.commandbuttons{
+  display: flex;
+  justify-content: space-between;
+  gap:5px;
 }
