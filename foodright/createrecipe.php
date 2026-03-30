@@ -10,6 +10,12 @@ if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !=
     header("Location: login.php");
     exit;
 }
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+    unset($_SESSION['login']);
+}
+
 $errors=[];
 $details=[];
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -98,11 +104,28 @@ $image_path="./pictures/";
             // $image = new ImageResize("pictures/" . $_FILES['image']['name']);
             // $image->resize(500,600);
             // $image->save("pictures/".$newname);
+        $query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath)";
+        $statement=$db->prepare($query);
+        $statement->bindValue(':user_id',$user_id);
+        $statement->bindValue(':title',$title);
+        $statement->bindValue(':description',$description);
+        $statement->bindValue(':category',$category);
+        $statement->bindValue(':cook_time',$cook_time);
+        $statement->bindValue(':servings',$servings);
+        $statement->bindValue(':ingredients',$ingredients);
+        $statement->bindValue(':instructions',$instructions);
+        $statement->bindValue(':imagepath',$pathofimage);
+
+// Execute the INSERT prepared statement.
+    $statement->execute();
 
 
+
+   }else{
+        $errors[]="file uploaded is not an image";
    }
-    }
 
+    }else{
 $query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath)";
 $statement=$db->prepare($query);
 $statement->bindValue(':user_id',$user_id);
@@ -113,10 +136,13 @@ $statement->bindValue(':cook_time',$cook_time);
 $statement->bindValue(':servings',$servings);
 $statement->bindValue(':ingredients',$ingredients);
 $statement->bindValue(':instructions',$instructions);
-$statement->bindValue(':imagepath',$pathofimage);
+$statement->bindValue(':imagepath',"No image");
 
 // Execute the INSERT prepared statement.
     $statement->execute();
+
+    }
+
 
 }
 
@@ -138,7 +164,10 @@ $statement->bindValue(':imagepath',$pathofimage);
         <section>
     <form action="" method="post"  enctype="multipart/form-data">
         <header>
-                <nav> <a href="">home</a>
+                <nav> 
+                    <a href="login.php">back</a>
+                    <a id="logout" href="logout.php">logout</a>
+                    
                     </nav>
                    
                
@@ -186,9 +215,11 @@ $statement->bindValue(':imagepath',$pathofimage);
         <button type="submit">Save Recipe</button>
 
     </form>
-   <?php foreach($errors as $error): ?>
-    <p>Error: <?=$error ?></p>
-    <?php endforeach?>
+   <?php if (!empty($errors)): ?>
+    <?php foreach($errors as $error): ?>
+        <p style="color:red;">Error: <?= htmlspecialchars($error) ?></p>
+    <?php endforeach; ?>
+<?php endif; ?>
        
     </section>
     </main>

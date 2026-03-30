@@ -2,7 +2,7 @@
 
 :root {
   --active-brightness: 0.85;
-  --border-radius: 5px;
+  --border-radius: 15px;
   --box-shadow: 2px 2px 10px;
   --color-accent: #118bee15;
   --color-bg: #fff;
@@ -80,7 +80,7 @@ hr {
   background-color: var(--color-bg-secondary);
   border: none;
   height: 1px;
-  margin: 4rem 0;
+  margin: 3.5rem 0;
   width: 100%;
 }
 
@@ -106,6 +106,7 @@ section aside {
   margin: 1rem;
   padding: 1.25rem;
   width: var(--width-card);
+  height: 400px;
 }
 
 section aside:hover {
@@ -186,7 +187,7 @@ nav {
   display: flex;
   font-weight: bold;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 /* Links */
 a {
@@ -198,7 +199,7 @@ a {
 
 a:visited,
 area:visited {
-  color: var(--color-secondary);
+  color: var(--color-link);
 }
 
 a:hover {
@@ -262,9 +263,6 @@ a i {
   padding: 1rem 2rem;
 }
 
-article aside a {
-  color: var(--color-secondary);
-}
 
 /* Images */
 figure {
@@ -309,7 +307,19 @@ form header {
   margin: 0.5rem 0;
   padding: 0.5rem 0;
 }
-
+.errors p {
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow) var(--color-shadow);
+  display: block;
+  max-width: var(--width-card-wide);
+  width: 100%;
+  min-width: var(--width-card);
+  margin-top: 0.9rem;
+  padding: 0.2rem;
+  text-align: var(--justify-normal);
+  
+}
 input,
 label,
 select,
@@ -440,4 +450,213 @@ table tr:nth-child(even) {
 
 input[type="file"]{
   border: none;
+}
+
+
+
+
+
+
+/* main page */
+/* main page */
+header.homepage {
+  background-color: var(--color-link);
+  color: var(--color-bg);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.3rem 0.2rem; /* reduce height */
+  box-sizing: border-box;
+  height: 75px;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  min-height: 70px;
+  width: 70%;
+  gap: -50px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 0.5rem;
+}
+
+.logo p {
+  margin: 0;
+  line-height: 1.1;
+  width: auto;
+}
+
+.logo img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navigation ul {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-right: 2.4rem;
+  padding: 0;
+}
+
+.navigation ul li  {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+}
+.navigation ul li a{
+  color: var(--color-bg);
+
+}
+
+/* From Uiverse.io by vinodjangid07 */ 
+.InputContainer {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom,rgb(227, 213, 255),rgb(255, 231, 231));
+  border-radius: 30px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.075);
+
+}
+.input {
+  width: 100%;
+  height: 50px;
+  border: none;
+  outline: none;
+  caret-color: rgb(255, 166, 0);
+  background-color: rgb(255, 255, 255);
+  border-radius: 30px;
+  padding-left: 15px;
+  letter-spacing: 0.8px;
+  color: rgb(19, 19, 19);
+  font-size: 13.4px;
+  box-sizing: border-box;
+}
+
+.dropdownStyle{
+  display: none;
+ top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid rgb(227, 213, 255);
+  background:  var(--color-bg);
+  z-index: 10;
+  color: var(--color-link);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255);
+}
+.optionStyle{
+   padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+.optionStyle:last-child {
+  border-bottom: none;
+}
+.search-feature{
+ display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.search-wrapper {
+  width: 80%;
+  position: relative;
+}
+.search-feature button{
+  width: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+section h2{
+  margin-top: 10px;
+  font-family: "Oswald", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-size:50px;
+  font-style: normal;
+  position: relative;
+}
+
+
+#section-1 {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+}
+#section-1 aside:hover{
+  transform: translateY(-4px);
+  border-color: #ffe0b4;
+  box-shadow: 0 10px 22px rgba(245, 148, 21, 0.5);
+}
+
+#section-1 aside img{
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  color: black;
+  
+
+}
+.card-link {
+  display: block;          
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: black;
+  
+}
+.card-link:hover{
+  filter: none;
+}
+
+/*Receipe details*/
+.receipe-details{
+   display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.meal-details{
+  height: 890px;
+}
+.meal-details img{
+  width: 100%;
+  height: 290px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  color: black;
+}
+.meal-details h3{
+  text-align: center;
+}
+
+#subinfo{
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
 }
