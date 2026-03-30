@@ -63,7 +63,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     <form action="login.php" method="post">
             
                 <header>
-                <nav> <a href="">home</a>
+                <nav> <a href="index.php">home</a>
                     </nav>
                    
                
