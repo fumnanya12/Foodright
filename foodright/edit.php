@@ -1,6 +1,12 @@
 <?php
 require('connect.php');
 $base = '/Assignment/Finalproject/foodright';
+session_start();
+
+if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {
+    header("Location: $base/index.php");
+    exit;
+}
 
 if($_POST&& isset($_POST['title'])&& isset($_POST['category'])&& isset($_POST['cook_time'])&& isset($_POST['servings'])&& isset($_POST['description'])&& isset($_POST['ingredients'])&& isset($_POST['instructions'])){
     $id  = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
@@ -79,7 +85,11 @@ else{
                 <li><a href="#">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
                 <li><a href="#">Test</a></li>
-                <li><a href="login.php">Login</a></li>
+                 <?php if(isset($_SESSION['login'])): ?>
+                    <li><a href="<?= $base ?>/logout.php">Logout</a></li>
+                    <?php else :?>
+                    <li><a href="<?= $base ?>/login.php">Login</a></li>
+                <?php endif?>
             </ul>
         </nav>
     </header>
