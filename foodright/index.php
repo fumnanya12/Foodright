@@ -1,6 +1,6 @@
 <?php
 require('connect.php');
-$query="SELECT * FROM recipes LIMIT 3";
+$query="SELECT * FROM recipes LIMIT 20";
  // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
 
