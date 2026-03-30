@@ -1,5 +1,7 @@
 <?php
 require('connect.php');
+session_start();
+
 $id=filter_input(INPUT_GET, 'id', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 $slug=filter_input(INPUT_GET, 'slug', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
@@ -40,7 +42,11 @@ $base = '/Assignment/Finalproject/foodright'
                 <li><a href="#">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
                 <li><a href="#">Test</a></li>
-                <li><a href="login.php">Login</a></li>
+                 <?php if(isset($_SESSION['login'])): ?>
+                    <li><a href="<?= $base ?>/logout.php">Logout</a></li>
+                <?php else :?>
+                <li><a href="<?= $base ?>/login.php">Login</a></li>
+                <?php endif?>
             </ul>
         </nav>
     </header>
@@ -51,7 +57,10 @@ $base = '/Assignment/Finalproject/foodright'
             <aside class="meal-details">
                   <nav> 
                     <a href="<?= $base ?>/index.php">home</a> 
-                    <a href="<?= $base ?>/edit.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
+                    <?php if(isset($_SESSION['username']['user_id']) && $_SESSION['username']['role'] == 'admin'):?>
+                        <a href="<?= $base ?>/edit.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
+
+                    <?php endif?>
                    
             </nav>
         

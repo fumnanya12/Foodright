@@ -21,7 +21,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $_SESSION['username']['role']=$users['role'];
    // $result="You have logged in succesfully";
    $_SESSION['login']="Logged in successfully";
-    header("Location: createrecipe.php");
+    header("Location: index.php");
             exit();
     }
         else{
