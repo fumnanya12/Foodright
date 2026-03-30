@@ -165,8 +165,12 @@ $statement->bindValue(':imagepath',"No image");
     <form action="" method="post"  enctype="multipart/form-data">
         <header>
                 <nav> 
-                    <a href="login.php">back</a>
-                    <a id="logout" href="logout.php">logout</a>
+                    <a href="<?= $base ?>/index.php">back</a>
+                      <?php if(isset($_SESSION['login'])): ?>
+                    <li><a href="<?= $base ?>/logout.php">Logout</a></li>
+                    <?php else :?>
+                    <li><a href="<?= $base ?>/login.php">Login</a></li>
+                    <?php endif?>
                     
                     </nav>
                    
