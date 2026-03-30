@@ -15,11 +15,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
     $users=$statement->fetch();
     if($users&& password_verify($password,$users['password_hash'])){
-    $result="Good to go";
     $_SESSION['username']['username']=$users['username']; //creates a session with the username
     $_SESSION['username']['user_id']=$users['user_id'];
     $_SESSION['username']['useremail']=$users['useremail'];
     $_SESSION['username']['role']=$users['role'];
+   // $result="You have logged in succesfully";
+   $_SESSION['login']="Logged in successfully";
     header("Location: createrecipe.php");
             exit();
     }
@@ -50,7 +51,15 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 </head>
 <body>
      <main>
+           <section>
+    <div class="errors">
+    <?php if($errors!=""): ?>    
+        <p style="color: red;"> Error: <?= $errors ?></p>
+    <?php endif?>
+    </div>
+    </section>
     <section>
+   
     <form action="login.php" method="post">
             
                 <header>
@@ -79,10 +88,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 <button type="submit">Submit</button>
             </div>
     </form>
-    <?php if($errors!=""): ?>
-            <p style="color: red;"> Error: <?= $errors ?></p>
-    <?php endif?>
+   
     </section>
+ 
+
     </main>
 </body>
 </html>
