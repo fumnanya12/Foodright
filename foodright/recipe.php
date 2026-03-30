@@ -50,10 +50,13 @@ $base = '/Assignment/Finalproject/foodright'
             <h2>Feature Receipes</h2>
             <aside class="meal-details">
                   <nav> 
-                    <a href="<?= $base ?>/index.php">home</a>                    
+                    <a href="<?= $base ?>/index.php">home</a> 
+                    <a href="<?= $base ?>/edit.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
+                   
             </nav>
+        
                 <h3><?= $recipe['title'] ?></h3>
-                <img src="<?= $base ?>/<?= $recipe['imagepath'] ?>" alt="<?= $recipe['title'] ?>">
+                <img src="<?= $base ?>/<?= $recipe['imagepath']  ?>" alt="<?= $recipe['title'] ?>">
                 <div id="subinfo">
                     <p>Category:</p>
                     <p><small><?= $recipe['category'] ?></small></p>
