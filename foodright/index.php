@@ -1,5 +1,7 @@
 <?php
 require('connect.php');
+session_start();
+
 $query="SELECT * FROM recipes LIMIT 20";
  // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
@@ -32,7 +34,11 @@ $query="SELECT * FROM recipes LIMIT 20";
                 <li><a href="#">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
                 <li><a href="#">Test</a></li>
+                <?php if(isset($_SESSION['login'])): ?>
+                    <li><a href="logout.php">Logout</a></li>
+                <?php else :?>
                 <li><a href="login.php">Login</a></li>
+                <?php endif?>
             </ul>
         </nav>
     </header>
