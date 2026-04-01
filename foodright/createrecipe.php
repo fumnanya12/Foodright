@@ -171,8 +171,7 @@ $statement->bindValue(':slug',$slug);
         <header>
                 <nav> 
                     <a href="<?= $base ?>/index.php">back</a>
-                    <?php if(isset($_SESSION['username']['user_id'])): 
-                        unset($_SESSION['login'])?>
+                    <?php if(isset($_SESSION['username']['user_id'])):?>
                     <a href="<?= $base ?>/logout.php">Logout</a>
                     <?php else :?>
                     <a href="<?= $base ?>/login.php">Login</a>

@@ -666,6 +666,12 @@ section h2{
   margin-bottom: 20px;
 }
 
+#subinfo p{
+  margin-top: 5px;
+margin-bottom: 5px;
+  
+}
+
 /* edit */
 .edit-details{
  width: 700px;
@@ -683,4 +689,12 @@ section h2{
   display: flex;
   justify-content: space-between;
   gap:5px;
+}
+
+#deletecheckbox{
+  display: flex ;
+  gap: 1px;
+}
+#deletecheckbox p{
+  width: 20%;
 }

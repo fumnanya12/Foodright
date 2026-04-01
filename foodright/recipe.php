@@ -16,7 +16,12 @@ if (!$recipe) {
     http_response_code(404);
     exit('Recipe not found.');
 }
-$base = '/Assignment/Finalproject/foodright'
+$base = '/Assignment/Finalproject/foodright';
+$image = $recipe['imagepath'] ?? null;
+$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+
+$image = ($image && $image !== 'No image')  ? $image : $placeholder;
+
 ?>
 
  <!DOCTYPE html>
@@ -41,8 +46,8 @@ $base = '/Assignment/Finalproject/foodright'
             <ul>
                 <li><a href="#">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
-                <li><a href="#">Test</a></li>
-                 <?php if(isset($_SESSION['login'])): ?>
+                <li><a href="<?= $base ?>/createrecipe.php">CreateReceipe</a></li>
+                 <?php if(isset($_SESSION['username']['user_id'])): ?>
                     <li><a href="<?= $base ?>/logout.php">Logout</a></li>
                 <?php else :?>
                 <li><a href="<?= $base ?>/login.php">Login</a></li>
@@ -65,7 +70,7 @@ $base = '/Assignment/Finalproject/foodright'
             </nav>
         
                 <h3><?= $recipe['title'] ?></h3>
-                <img src="<?= $base ?>/<?= $recipe['imagepath']  ?>" alt="<?= $recipe['title'] ?>">
+                <img src="<?= $base ?>/<?= $image?>" alt="<?= $recipe['title'] ?>">
                 <div id="subinfo">
                     <p>Category:</p>
                     <p><small><?= $recipe['category'] ?></small></p>

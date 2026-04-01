@@ -1,14 +1,19 @@
 <?php
 require('connect.php');
 session_start();
-
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['login']);
+    
+}
 $query="SELECT * FROM recipes LIMIT 20";
  // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
 
      // Execution on the DB server is delayed until we execute().
      $statement->execute(); 
-
+$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
 
 ?>
 <!DOCTYPE html>
@@ -33,8 +38,8 @@ $query="SELECT * FROM recipes LIMIT 20";
             <ul>
                 <li><a href="#">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
-                <li><a href="#">Test</a></li>
-                <?php if(isset($_SESSION['login'])): ?>
+                <li><a href="createrecipe.php">CreateReceipe</a></li>
+                <?php if(isset($_SESSION['username']['user_id'])): ?>
                     <li><a href="logout.php">Logout</a></li>
                 <?php else :?>
                 <li><a href="login.php">Login</a></li>
@@ -65,11 +70,16 @@ $query="SELECT * FROM recipes LIMIT 20";
         <section>
             <h2>Feature Receipes</h2>
         <div id="section-1">
-           <?php while(($row=$statement->fetch())):  ?>
+           <?php while(($row=$statement->fetch())): 
+            $image = $row['imagepath'] ?? null;
+
+        $image = ($image && $image !== 'No image')  ? $image : $placeholder;
+            
+            ?>
             <aside>
                 
                 <a href="<?= $row['recipe_id'] ?>/<?= $row['slug'] ?>/" class="card-link">
-                    <img src="<?= $row['imagepath'] ?>" alt="<?= $row['title'] ?>">
+                    <img src="<?=  $image ?>" alt="<?= $row['title'] ?>">
                  <h3><?=$row['title'] ?></h3>
                 <p>Description</p>
                 <p><small><?=($row['description']) ?></small></p>
