@@ -4,23 +4,26 @@ require 'php-image-resize-master/lib/ImageResize.php';
 require 'php-image-resize-master/lib/ImageResizeException.php';
 use Gumlet\ImageResize; 
 session_start();
+$base = '/Assignment/Finalproject/foodright';
 
 // admin check
 if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {
     header("Location: login.php");
-    exit;
-}
-if(isset($_SESSION['login'])){
-    $msg = json_encode($_SESSION['login']);
-    echo "<script>alert($msg);</script>";
-    unset($_SESSION['login']);
+    exit();
 }
 
+function create_slug(string $text): string {
+    $text = strtolower(trim($text));
+    $text = preg_replace('/[^a-z0-9\s-]/', '', $text);
+    $text = preg_replace('/[\s-]+/', '-', $text);
+    return trim($text, '-');
+}
 $errors=[];
 $details=[];
 if($_SERVER['REQUEST_METHOD']==='POST'){
 $title=trim(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
 $title = str_replace('"', '', $title);
+$slug=create_slug($title);
 $description=trim(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
 $category=trim(filter_input(INPUT_POST, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
 $cook_time=filter_input(INPUT_POST, 'cook_time', FILTER_VALIDATE_INT);
@@ -104,7 +107,7 @@ $image_path="./pictures/";
             // $image = new ImageResize("pictures/" . $_FILES['image']['name']);
             // $image->resize(500,600);
             // $image->save("pictures/".$newname);
-        $query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath)";
+        $query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath, slug) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath,:slug)";
         $statement=$db->prepare($query);
         $statement->bindValue(':user_id',$user_id);
         $statement->bindValue(':title',$title);
@@ -115,6 +118,7 @@ $image_path="./pictures/";
         $statement->bindValue(':ingredients',$ingredients);
         $statement->bindValue(':instructions',$instructions);
         $statement->bindValue(':imagepath',$pathofimage);
+        $statement->bindValue(':slug',$slug);
 
 // Execute the INSERT prepared statement.
     $statement->execute();
@@ -126,7 +130,7 @@ $image_path="./pictures/";
    }
 
     }else{
-$query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath)";
+$query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath,slug) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath,:slug)";
 $statement=$db->prepare($query);
 $statement->bindValue(':user_id',$user_id);
 $statement->bindValue(':title',$title);
@@ -137,6 +141,7 @@ $statement->bindValue(':servings',$servings);
 $statement->bindValue(':ingredients',$ingredients);
 $statement->bindValue(':instructions',$instructions);
 $statement->bindValue(':imagepath',"No image");
+$statement->bindValue(':slug',$slug);
 
 // Execute the INSERT prepared statement.
     $statement->execute();
@@ -162,14 +167,15 @@ $statement->bindValue(':imagepath',"No image");
 <body>
     <main>
         <section>
-    <form action="" method="post"  enctype="multipart/form-data">
+    <form action="createrecipe.php" method="post"  enctype="multipart/form-data">
         <header>
                 <nav> 
                     <a href="<?= $base ?>/index.php">back</a>
-                      <?php if(isset($_SESSION['login'])): ?>
-                    <li><a href="<?= $base ?>/logout.php">Logout</a></li>
+                    <?php if(isset($_SESSION['username']['user_id'])): 
+                        unset($_SESSION['login'])?>
+                    <a href="<?= $base ?>/logout.php">Logout</a>
                     <?php else :?>
-                    <li><a href="<?= $base ?>/login.php">Login</a></li>
+                    <a href="<?= $base ?>/login.php">Login</a>
                     <?php endif?>
                     
                     </nav>
@@ -216,7 +222,7 @@ $statement->bindValue(':imagepath',"No image");
 
          <label for="image">Recipe Image</label>
          <input type="file" id="image" name="image">
-        <button type="submit">Save Recipe</button>
+        <button type="submit"onclick="return alert('You have Saved  A new Recipe Succesfully ')">Save Recipe</button>
 
     </form>
    <?php if (!empty($errors)): ?>
