@@ -7,6 +7,7 @@ if(isset($_SESSION['login'])){
      unset($_SESSION['login']);
     
 }
+
 $query="SELECT * FROM recipes LIMIT 20";
  // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
@@ -14,6 +15,7 @@ $query="SELECT * FROM recipes LIMIT 20";
      // Execution on the DB server is delayed until we execute().
      $statement->execute(); 
 $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$rows = $statement->fetchAll();
 
 ?>
 <!DOCTYPE html>
@@ -31,18 +33,24 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
 <body>
      <header class="homepage">
         <nav class="navigation" >
+
             <div class="logo" >
             <p>FOOD <br>Right</p>
              <img src="./pictures/foodrightlogo.jpg" alt="">
              </div>
             <ul>
-                <li><a href="#">Receipes</a></li>
-                <li><a href="#">Calorie calculator</a></li>
+                <li><a href="allrecipes.php">Receipes</a></li>
+                <li><a href="admin.php">Admin</a></li>
+                <?php if(isset($_SESSION['username']['user_id'])): 
+                     $_SESSION['location']="index.php";
+                    ?>
                 <li><a href="createrecipe.php">CreateReceipe</a></li>
-                <?php if(isset($_SESSION['username']['user_id'])): ?>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else :?>
-                <li><a href="login.php">Login</a></li>
+
+                <li><a href="logout.php?redirect=allrecipes.php" onclick="return confirm('Are you sure you want to Logout?');" >Logout</a></li>
+                <?php else :
+                     $_SESSION['location']="index.php";
+                    ?>
+                <li><a href="login.php?redirect=allrecipes.php">Login</a></li>
                 <?php endif?>
             </ul>
         </nav>
@@ -70,23 +78,26 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
         <section>
             <h2>Feature Receipes</h2>
         <div id="section-1">
-           <?php while(($row=$statement->fetch())): 
+           <?php foreach($rows as $row): 
             $image = $row['imagepath'] ?? null;
 
-        $image = ($image && $image !== 'No image')  ? $image : $placeholder;
+           $image = ($image && $image !== 'No image')  ? $image : $placeholder;
             
             ?>
             <aside>
                 
                 <a href="<?= $row['recipe_id'] ?>/<?= $row['slug'] ?>/" class="card-link">
-                    <img src="<?=  $image ?>" alt="<?= $row['title'] ?>">
+                <?php if($row['imagepath']!=='No image'):?>
+
+                <img src="<?= $image?>" alt="<?= $row['title'] ?>">
+                 <?php endif?>
                  <h3><?=$row['title'] ?></h3>
                 <p>Description</p>
                 <p><small><?=($row['description']) ?></small></p>
                 </a>
             </aside>
 
-            <?php endwhile ?>
+            <?php endforeach ?>
           
         </div>
         <hr>

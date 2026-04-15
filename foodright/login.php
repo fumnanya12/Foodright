@@ -3,6 +3,12 @@ require('connect.php');
 $errors="";
 $result="";
 session_start();
+if(isset($_SESSION['registered'])){
+    $msg = json_encode($_SESSION['registered']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['registered']);
+    
+}
 if($_SERVER['REQUEST_METHOD']==='POST'){
     if(isset($_POST['username'])&&isset($_POST['password'])){
     $username=filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -21,7 +27,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $_SESSION['username']['role']=$users['role'];
    // $result="You have logged in succesfully";
    $_SESSION['login']="Logged in successfully";
-    header("Location: index.php");
+$redirect = $_SESSION['location'] ?? 'index.php';
+
+    header("Location: $redirect");
             exit();
     }
         else{
@@ -84,6 +92,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 <input type="checkbox" id="check" name="remember">
                 <label for="check">Remember me</label>
                 </div>
+                <a href="register.php">Create a new account</a>
 
                 <button type="submit">Submit</button>
             </div>

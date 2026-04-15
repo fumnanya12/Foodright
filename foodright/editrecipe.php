@@ -55,8 +55,27 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $errors[] = "Instructions are required.";
     }
      
+    function file_upload_path($original_filename, $upload_subfolder_name = 'pictures') {
+        $current_folder = dirname(__FILE__);
+        $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
+        return join(DIRECTORY_SEPARATOR, $path_segments);
+    }
+    function file_is_an_image_or_pdf($temporary_path, $new_path) {
+    $allowed_mime_types      = ['image/gif', 'image/jpeg', 'image/png'];
+    $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];
+
+    $actual_file_extension   = pathinfo($new_path, PATHINFO_EXTENSION);
+    $actual_mime_type        = mime_content_type($temporary_path);//getimagesize($temporary_path)['mime'];
+
+    $file_extension_is_valid = in_array($actual_file_extension, $allowed_file_extensions);
+    $mime_type_is_valid      = in_array($actual_mime_type, $allowed_mime_types);
+
+    return $file_extension_is_valid && $mime_type_is_valid;
+    }
     if(empty($errors)){
-        $query="UPDATE recipes SET title= :title, description=:description, category=:category,cook_time=:cook_time,servings=:servings,ingredients=:ingredients,instructions=:instructions WHERE recipe_id = :id AND slug = :slug";
+        $datetime = new DateTime('now', new DateTimeZone('America/Winnipeg'));
+        $updatetime= $datetime->format('Y-m-d H:i:s');
+        $query="UPDATE recipes SET title= :title, description=:description, category=:category,cook_time=:cook_time,servings=:servings,ingredients=:ingredients,instructions=:instructions, updated_time=:updated_time WHERE recipe_id = :id AND slug = :slug";
         $statement=$db->prepare($query);
         $statement->bindValue(':title',$title);
         $statement->bindValue(':description',$description);
@@ -65,6 +84,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $statement->bindValue(':servings',$servings);
         $statement->bindValue(':ingredients',$ingredients);
         $statement->bindValue(':instructions',$instructions);
+        $statement->bindValue(':updated_time',$updatetime);
         $statement->bindValue(':id', (int)$id, PDO::PARAM_INT);
         $statement->bindValue(':slug', $slug);
           // Execute the INSERT.
@@ -76,10 +96,36 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $statement->bindValue(':imagepath', 'No image');
             $statement->bindValue(':id', (int)$id, PDO::PARAM_INT);
             $statement->bindValue(':slug', $slug);
-                $statement->execute();
+            $statement->execute();
 
 
         }
+        $pathofimage="";
+        $image_path="./pictures/";
+        $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
+        $upload_error_detected= isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
+
+        if ($image_upload_detected) {
+
+        $image_filename       = $_FILES['image']['name'];
+        $temporary_image_path = $_FILES['image']['tmp_name'];
+        $new_image_path       = file_upload_path($image_filename);
+        //$pathofimage="it uploaded";
+
+        if (file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {
+            move_uploaded_file($temporary_image_path, $new_image_path);
+            $pathofimage=$image_path .$_FILES['image']['name'];
+            $query="UPDATE recipes SET imagepath=:imagepath WHERE recipe_id = :id AND slug = :slug";
+            $statement=$db->prepare($query);
+            $statement->bindValue(':imagepath', $pathofimage);
+            $statement->bindValue(':id', (int)$id, PDO::PARAM_INT);
+            $statement->bindValue(':slug', $slug);
+            $statement->execute();
+
+        }
+        }
+
+
         header("Location: $base/{$id}/{$slug}/");
         exit();
     
@@ -132,6 +178,11 @@ else{
     $id=false;
 }
 
+$cat_query="SELECT * FROM category";
+$cat_statement = $db->prepare($cat_query);
+$cat_statement->execute(); 
+
+
 $image = $recipe['imagepath'] ?? null;
 $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
 
@@ -157,12 +208,17 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
              <img src="<?= $base ?>/pictures/foodrightlogo.jpg" alt="">
              </div>
             <ul>
-                <li><a href="#">Receipes</a></li>
+                <li><a href="<?= $base ?>/index.php">Home</a></li>
+                <li><a href="<?= $base ?>/allrecipes.php">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
-                <li><a href="<?= $base ?>/createrecipe.php">CreateReceipe</a></li>
-                 <?php if(isset($_SESSION['username']['user_id'])): ?>
+                
+                 <?php if(isset($_SESSION['username']['user_id'])): 
+                     $_SESSION['location']="$base/editrecipe.php"; ?>
+                     <li><a href="<?= $base ?>/createrecipe.php">CreateReceipe</a></li>
                     <li><a href="<?= $base ?>/logout.php">Logout</a></li>
-                    <?php else :?>
+                    <?php else :
+                         $_SESSION['location']="$base/editrecipe.php";
+                        ?>
                     <li><a href="<?= $base ?>/login.php">Login</a></li>
                 <?php endif?>
             </ul>
@@ -180,23 +236,39 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
                     <p style="color:red;">Error: <?= htmlspecialchars($error) ?></p>
                 <?php endforeach; ?>
                 <?php endif; ?>
-                <form action="edit.php" method="post" enctype="multipart/form-data">
+                <form action="editrecipe.php" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?= $recipe['recipe_id'] ?>">
                 <input type="hidden" name="slug" value="<?= $recipe['slug'] ?>">
                 <input type="hidden" name="current_imagepath" value="<?= $recipe['imagepath'] ?>">
 
   
                 <input type="text" id="title" name="title" value="<?= $recipe['title'] ?>">
-                <img src="<?=$image?>" alt="<?= $recipe['title'] ?>">
                 <?php if($recipe['imagepath']!=='No image'):?>
+                <img src="<?=$image?>" alt="<?= $recipe['title'] ?>">
+
                 <div id="deletecheckbox"><p>Delete image</p> 
-                <input type="checkbox" id="imagedelete" name="imagedelete"  onclick="return confirm('Are you sure you want to delete this image?');"></div>
+                <input type="checkbox" id="imagedelete" name="imagedelete"  onclick="return confirm('Are you sure you want to delete this image?');">
+                <label for="image">Replace Image</label>
+                <input type="file" id="image" name="image">
+            </div>
+                <?php else: ?>
+                    <label for="image">Add Image</label>
+                    <input type="file" id="image" name="image">
+
                 <?php endif?>
                 
 
                 <div id="subinfo">
                     <p>Category:</p>
-                    <input type="text" id="category" name="category" value="<?= $recipe['category'] ?>">
+                    <select id="category" name="category" style="width: 180px;" required>
+                    <option value="">Select Category</option>
+                  <?php while(($category=$cat_statement->fetch())): ?>
+                    <option value="<?= $category['category'] ?>"><?= $category['category'] ?></option>
+
+                    <?php endwhile ?>
+       
+                
+                    </select>
                     <p>Cooktime:</p>
                     <input type="text" id="cook_time" name="cook_time" value="<?= $recipe['cook_time'] ?>">
                     <p>Servings:</p>

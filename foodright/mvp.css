@@ -350,8 +350,8 @@ select,
 textarea {
   border: 1px solid var(--color-bg-secondary);
   border-radius: var(--border-radius);
-  margin-bottom: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.7rem;
+  padding: 0.6rem 0.8rem;
 }
 
 input[type="text"],
@@ -579,6 +579,7 @@ header.homepage {
 .search-wrapper {
   width: 80%;
   position: relative;
+  max-width: 900px;
 }
 .search-feature button{
   width: auto;
@@ -693,8 +694,114 @@ margin-bottom: 5px;
 
 #deletecheckbox{
   display: flex ;
+  justify-content: space-around;
   gap: 1px;
+  align-items: center;
 }
 #deletecheckbox p{
   width: 20%;
+}
+
+/*user list*/
+.usersdetails{
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.user-list{
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  width: 100%;
+  margin-top: 20px;
+  margin-right: 13px;
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow) var(--color-shadow);
+  align-items: center;
+  padding: 8px;
+}
+.usersdetails aside{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  width: 100%;
+  overflow-x: auto;
+  max-height: 500px;
+
+
+}
+.user-list img{
+  max-width: 45px;
+  width: auto;
+  height: 35px;
+  border-radius: 50%;
+  margin: 3px;
+  border: 1px solid black;
+  object-fit: cover;
+}
+ /*all recepies*/
+ .allrecipe_section{
+  max-width: 90%;
+ }
+ 
+#fooddatabase {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  width: 100%;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+}
+#fooddatabase aside{
+  width: 80%;
+}
+#fooddatabase aside:hover{
+  transform: translateY(-4px);
+  border-color: #ffe0b4;
+  box-shadow: 0 10px 22px rgba(245, 148, 21, 0.5);
+}
+
+#fooddatabase aside img{
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  color: black;
+  
+
+}
+.sort-section {
+    margin: 55px 0;
+        justify-content: left;
+
+}
+.sort-menu {
+    display: flex;
+    gap: 15px;
+}
+
+.sort-item {
+    position: relative;
+}
+.dropdown {
+    display: none;
+    margin-top: 10px;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    min-width: 120px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    z-index: 100;
+}
+
+.dropdown a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #faa749;
 }

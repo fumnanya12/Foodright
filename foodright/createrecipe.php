@@ -31,6 +31,14 @@ $servings=filter_input(INPUT_POST, 'servings', FILTER_VALIDATE_INT);
 $ingredients=trim(filter_input(INPUT_POST, 'ingredients', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
 $instructions=trim(filter_input(INPUT_POST, 'instructions', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
 $user_id=$_SESSION['username']['user_id'];
+$_SESSION['title']=$title;
+$_SESSION['description']=$description;
+$_SESSION['category']=$category;
+$_SESSION['cook_time']=$cook_time;
+$_SESSION['servings']=$servings;
+$_SESSION['ingredients']=$ingredients;
+$_SESSION['instructions']=$instructions;
+
 // $details[]=$title;
 // $details[]=$user_id;
 // $details[]=$description;
@@ -86,7 +94,7 @@ function file_is_an_image_or_pdf($temporary_path, $new_path) {
    
 
 if(empty($errors)){
-    $pathofimage="";
+$pathofimage="";
 $image_path="./pictures/";
  $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
     $upload_error_detected= isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
@@ -98,7 +106,7 @@ $image_path="./pictures/";
         $new_image_path       = file_upload_path($image_filename);
         //$pathofimage="it uploaded";
 
-   if (file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {
+   if (file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {   
             move_uploaded_file($temporary_image_path, $new_image_path);
              $pathofimage=$image_path .$_FILES['image']['name'];//$new_image_path;
             // $name = pathinfo($new_image_path, PATHINFO_FILENAME);
@@ -154,6 +162,10 @@ $statement->bindValue(':slug',$slug);
 
 
 }
+$query="SELECT * FROM category";
+$statement = $db->prepare($query);
+$statement->execute(); 
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -196,11 +208,12 @@ $statement->bindValue(':slug',$slug);
             <label for="category">Category</label>
             <select id="category" name="category" style="width: 180px;" required>
                 <option value="">Select Category</option>
-                <option value="Breakfast">Breakfast</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Dinner">Dinner</option>
-                <option value="Snack">Snack</option>
-                <option value="Dessert">Dessert</option>
+                  <?php while(($category=$statement->fetch())): ?>
+                    <option value="<?= $category['category'] ?>"><?= $category['category'] ?></option>
+
+                <?php endwhile ?>
+       
+                
             </select>
             </div>
             <div class="cook_time">

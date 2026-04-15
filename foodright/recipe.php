@@ -1,7 +1,7 @@
 <?php
 require('connect.php');
 session_start();
-
+$errors=[];
 $id=filter_input(INPUT_GET, 'id', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 $slug=filter_input(INPUT_GET, 'slug', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
@@ -21,6 +21,34 @@ $image = $recipe['imagepath'] ?? null;
 $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
 
 $image = ($image && $image !== 'No image')  ? $image : $placeholder;
+
+$commentquery="SELECT * FROM comments WHERE recipe_id = :id ORDER BY created_at desc";
+$commentstatement=$db->prepare($commentquery);
+$commentstatement->bindValue(':id', (int)$id, PDO::PARAM_INT);
+$commentstatement->execute();
+$recipecomments=$commentstatement->fetchAll();
+
+
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    $userid=filter_input(INPUT_POST,'user_id', FILTER_SANITIZE_NUMBER_INT);
+    $recipeid=filter_input(INPUT_POST,'recipe_id', FILTER_SANITIZE_NUMBER_INT);
+    $username=filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_SPECIAL_CHARS);
+    $comment=trim(filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
+   if($comment===''){
+    $errors[]="A comment us required "; 
+   }
+   if(empty($errors)){
+    $query="INSERT INTO comments (recipe_id, user_id,user_name,comment) values(:recipe_id, :user_id,:user_name,:comment)";
+    $statement=$db->prepare($query);
+    $statement->bindValue(':user_id',$userid);
+    $statement->bindValue(':recipe_id',$recipeid);
+    $statement->bindValue(':user_name',$username);
+    $statement->bindValue(':comment',$comment);
+    $statement->execute();
+    header("Location: $base/{$id}/{$slug}/");
+    exit();
+    }
+}
 
 ?>
 
@@ -44,12 +72,17 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
              <img src="<?= $base ?>/pictures/foodrightlogo.jpg" alt="">
              </div>
             <ul>
-                <li><a href="#">Receipes</a></li>
+                <li><a href="<?= $base ?>/index.php">Home</a></li>
+                <li><a href="<?= $base ?>/allrecipes.php">Receipes</a></li>
                 <li><a href="#">Calorie calculator</a></li>
                 <li><a href="<?= $base ?>/createrecipe.php">CreateReceipe</a></li>
-                 <?php if(isset($_SESSION['username']['user_id'])): ?>
+                 <?php if(isset($_SESSION['username']['user_id'])):
+                    $_SESSION['location']="$base/{$id}/{$slug}/";
+                    ?>
                     <li><a href="<?= $base ?>/logout.php">Logout</a></li>
-                <?php else :?>
+                <?php else :
+                $_SESSION['location']="$base/{$id}/{$slug}/";
+                    ?>
                 <li><a href="<?= $base ?>/login.php">Login</a></li>
                 <?php endif?>
             </ul>
@@ -63,14 +96,18 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
                   <nav> 
                     <a href="<?= $base ?>/index.php">home</a> 
                     <?php if(isset($_SESSION['username']['user_id']) && $_SESSION['username']['role'] == 'admin'):?>
-                        <a href="<?= $base ?>/edit.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
+                        <a href="<?= $base ?>/editrecipe.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
 
                     <?php endif?>
                    
             </nav>
         
                 <h3><?= $recipe['title'] ?></h3>
+                <?php if($recipe['imagepath']!=='No image'):?>
+
                 <img src="<?= $base ?>/<?= $image?>" alt="<?= $recipe['title'] ?>">
+                <?php endif?>
+
                 <div id="subinfo">
                     <p>Category:</p>
                     <p><small><?= $recipe['category'] ?></small></p>
@@ -89,6 +126,39 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
             </aside>
            
         <hr>
+        <aside>
+            <h3>Recent comments</h3>
+
+            <form action="<?= $base ?>/<?= $recipe['recipe_id'] ?>/<?= $recipe['slug'] ?>/" method="post">
+                <h3>My comment</h3>
+                
+                <?php if(!isset($_SESSION['username']['user_id'])): ?>
+                <label for="username">Name:</label>
+                <input type="text" name="user_name" id="user_name" required>
+                <input type="hidden" name="recipe_id" value="<?= $recipe['recipe_id'] ?>">
+                <?php else:?>
+                <input type="hidden" name="user_id" value="<?= $_SESSION['username']['user_id'] ?>">
+                <input type="hidden" name="user_name" value="<?= $_SESSION['username']['username'] ?>">
+                <input type="hidden" name="recipe_id" value="<?= $recipe['recipe_id'] ?>">
+                <?php endif ?>
+                <label for="comment">Enter comment:</label>
+                <textarea name="comment" rows="4" id="comment" placeholder="What did you think about this recipe?"></textarea>
+                 <p class="commandbuttons">
+                        <input type="submit" name="command" value="Submit">
+                </p>
+            </form>
+            <?php foreach($recipecomments as $com): ?>
+
+            <h3><?= $com['user_name']?></h3>
+            <p><?= nl2br($com['comment'])?></p>
+            <p><?= $com['created_at']?></p>
+         
+            <hr>
+
+            <?php endforeach?>
+
+
+        </aside>
         </section>
         
     </main>
