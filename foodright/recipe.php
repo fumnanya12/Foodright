@@ -22,9 +22,8 @@ if (!$recipe) {
     http_response_code(404);
     exit('Recipe not found.');
 }
-$base = '/Assignment/Finalproject/foodright';
-$image = $recipe['imagepath'] ?? null;
-$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$base = '';$image = $recipe['imagepath'] ?? null;
+$placeholder='/pictures/placeholder.png';
 
 $image = ($image && $image !== 'No image')  ? $image : $placeholder;
 

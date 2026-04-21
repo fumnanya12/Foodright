@@ -1,7 +1,7 @@
 <?php 
 require('connect.php');
 session_start();
-
+$base = '';
 if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {
     header("Location: $base/index.php");
     exit;

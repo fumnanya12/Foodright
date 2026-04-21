@@ -4,8 +4,7 @@ session_start();
 
 $currentKeyword = $_GET['keyword'] ?? '';
 $currentCategory = $_GET['category'] ?? 'all';
-$base = '/Assignment/Finalproject/foodright';
-// Get search inputs
+$base = '';// Get search inputs
 $keyword = trim(filter_input(INPUT_GET, 'keyword', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
 $category = trim(filter_input(INPUT_GET, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'all');
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);

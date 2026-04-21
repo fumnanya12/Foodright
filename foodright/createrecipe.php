@@ -4,8 +4,7 @@ require 'php-image-resize-master/lib/ImageResize.php';
 require 'php-image-resize-master/lib/ImageResizeException.php';
 use Gumlet\ImageResize; 
 session_start();
-$base = '/Assignment/Finalproject/foodright';
-
+$base = '';
 // admin check
 if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {
     header("Location: login.php");

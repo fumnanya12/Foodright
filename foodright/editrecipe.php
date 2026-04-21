@@ -1,6 +1,6 @@
 <?php
 require('connect.php');
-$base = '/Assignment/Finalproject/foodright';
+$base = '';
 session_start();
 $errors=[];
 $recipe = null;
@@ -204,7 +204,7 @@ $cat_statement->execute();
 
 
 $image = $recipe['imagepath'] ?? null;
-$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$placeholder='/pictures/placeholder.png';
 
 $image = ($image && $image !== 'No image')  ? $image : $placeholder;
 ?>

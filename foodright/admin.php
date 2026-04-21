@@ -1,5 +1,5 @@
 <?php
-$base = '/Assignment/Finalproject/foodright';
+$base ='';
 session_start();
 require('connect.php');
 require 'php-image-resize-master/lib/ImageResize.php';
@@ -123,7 +123,7 @@ $query="SELECT * FROM users LIMIT 20";
         <nav class="navigation" >
             <div class="logo" >
             <p>FOOD <br>Right</p>
-             <img src="./pictures/foodrightlogo.jpg" alt="">
+             <img src="/pictures/foodrightlogo.jpg" alt="">
              </div>
             <ul>
                 <li><a href="index.php">Home</a></li>

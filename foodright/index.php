@@ -14,7 +14,7 @@ $query="SELECT * FROM recipes LIMIT 10";
 
      // Execution on the DB server is delayed until we execute().
      $statement->execute(); 
-$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$placeholder='/pictures/placeholder.png';
 $rows = $statement->fetchAll();
 
 
@@ -23,8 +23,7 @@ $query_cat="SELECT * FROM category ORDER BY category ASC";
 $statement_cat = $db->prepare($query_cat);
 $statement_cat->execute(); 
 $categories=$statement_cat->fetchAll();
-$base = '/Assignment/Finalproject/foodright';
-
+$base = '';
 $currentKeyword = filter_input(INPUT_GET,'keyword',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? '';
 $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? 'all';
 

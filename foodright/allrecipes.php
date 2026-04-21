@@ -7,7 +7,7 @@ if(isset($_SESSION['login'])){
      unset($_SESSION['login']);
     
 }
-$base = '/Assignment/Finalproject/foodright';
+$base = '';
 
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 // Current page
@@ -136,7 +136,7 @@ $statement_cat = $db->prepare($query_cat);
 $statement_cat->execute(); 
 $categories=$statement_cat->fetchAll();
 
-$placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$placeholder='/pictures/placeholder.png';
 $_SESSION['backlocation']="$base/allrecipes.php?page=$page";
 
 
@@ -161,7 +161,7 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
         <nav class="navigation" >
             <div class="logo" >
             <p>FOOD <br>Right</p>
-             <img src="./pictures/foodrightlogo.jpg" alt="">
+             <img src="/pictures/foodrightlogo.jpg" alt="">
              </div>
             <ul>
                 <li><a href="index.php">Home</a></li>

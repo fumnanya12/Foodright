@@ -1,5 +1,5 @@
 <?php
-$base = '/Assignment/Finalproject/foodright';
+$base = '';
 session_start();
 require('connect.php');
 if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {

@@ -1,5 +1,5 @@
 <?php
-$base = '/Assignment/Finalproject/foodright';
+$base = '';
 session_start();
 require('connect.php');
 require 'php-image-resize-master/lib/ImageResize.php';
