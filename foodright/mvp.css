@@ -223,10 +223,10 @@ input[type="submit"] {
   line-height: var(--line-height);
   margin: 0.5rem 0;
   padding: 1rem 2rem;
-  width: 100%;
   box-sizing: border-box;
 
 }
+
 
 button,
 input[type="submit"] {
@@ -298,7 +298,9 @@ form {
   box-shadow: var(--box-shadow) var(--color-shadow);
   display: block;
   max-width: var(--width-card-wide);
-  min-width: var(--width-card);
+  min-width: 0;
+  width: 100%;
+
   padding: 0.7rem;
   text-align: var(--justify-normal);
 }
@@ -575,16 +577,37 @@ header.homepage {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+
 }
 .search-wrapper {
   width: 80%;
   position: relative;
   max-width: 900px;
+  border: none;
+  border-radius: none;
+  box-shadow: none;
 }
+
 .search-feature button{
   width: auto;
   display: block;
   margin: 0 auto;
+}
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination a,
+.pagination strong {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.pagination strong {
+  font-weight: bold;
 }
 
 section h2{
@@ -675,7 +698,8 @@ margin-bottom: 5px;
 
 /* edit */
 .edit-details{
- width: 700px;
+width: 100%;
+  max-width: 700px; 
 }
 
 .edit-details img{
@@ -804,4 +828,155 @@ margin-bottom: 5px;
     padding: 8px 12px;
     text-decoration: none;
     color: #faa749;
+}
+
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  #fooddatabase {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  #section-1 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .navigation {
+ width: min(95%, 1100px);  }
+}
+
+@media (max-width: 768px) {
+  header.homepage {
+    height: auto;
+    padding: 0.8rem 0.5rem;
+    text-align: center; /* center text */
+
+    
+  }
+
+  .navigation {
+    width: 95%;
+    flex-direction: column;
+    align-items: center;   /* 🔥 center horizontally */
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .navigation ul {
+    flex-direction: column;
+    align-items: center;   /* 🔥 center list items */
+    justify-content: center;
+    gap: 12px;
+    margin-right: 0;
+    width: 100%;
+  }
+  .navigation ul li a{
+    font-size: 1.3rem;
+
+  }
+
+  .logo {
+    padding-left: 0;
+    justify-content: center; /* 🔥 center logo content */
+  text-align: center;
+  }
+
+  #section-1,
+  #fooddatabase,
+  .usersdetails aside {
+    grid-template-columns: 1fr;
+  }
+
+  #section-1 aside,
+  #fooddatabase aside {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .edit-details {
+    width: 100%;
+  }
+
+  form,
+  .errors p {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .short-input {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .commandbuttons {
+    flex-direction: column;
+  }
+
+  .search-wrapper {
+    width: 100%;
+  }
+
+  .search-feature button {
+    width: 100%;
+  }
+
+  section h2 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .meal-details img,
+  .edit-details img {
+    height: auto;
+  }
+
+  #subinfo {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .user-list {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 15px;
+  }
+
+  footer,
+  header,
+  main {
+    padding: 1rem 0.75rem;
+  }
+
+  .logo img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .input,
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  section h2 {
+    font-size: 1.6rem;
+  }
+
+  a b,
+  a strong,
+  button,
+  input[type="submit"] {
+    padding: 0.85rem 1rem;
+  }
 }

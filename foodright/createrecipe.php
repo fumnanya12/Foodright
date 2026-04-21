@@ -90,6 +90,16 @@ function file_is_an_image_or_pdf($temporary_path, $new_path) {
 
     return $file_extension_is_valid && $mime_type_is_valid;
 }
+if($_POST['command']==='Clear'){
+        unset($_SESSION['title']);
+    unset($_SESSION['description']);
+    unset($_SESSION['category']);
+    unset($_SESSION['cook_time']);
+    unset($_SESSION['servings']);
+    unset($_SESSION['ingredients']);
+    unset($_SESSION['instructions']);
+    $errors=[];
+}
 
    
 
@@ -101,20 +111,18 @@ $image_path="./pictures/";
 
     if ($image_upload_detected) {
       
-        $image_filename       = $_FILES['image']['name'];
+        $image_filename       = str_replace(' ', '', $_FILES['image']['name']);
         $temporary_image_path = $_FILES['image']['tmp_name'];
         $new_image_path       = file_upload_path($image_filename);
         //$pathofimage="it uploaded";
 
    if (file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {   
             move_uploaded_file($temporary_image_path, $new_image_path);
-             $pathofimage=$image_path .$_FILES['image']['name'];//$new_image_path;
-            // $name = pathinfo($new_image_path, PATHINFO_FILENAME);
-            // $actual_file_extension   = pathinfo($new_image_path, PATHINFO_EXTENSION);
-            // $newname=$name ."_display.". $actual_file_extension;
-            // $image = new ImageResize("pictures/" . $_FILES['image']['name']);
-            // $image->resize(500,600);
-            // $image->save("pictures/".$newname);
+             $pathofimage=$image_path . str_replace(' ', '', $$_FILES['image']['name']);//$new_image_path;
+            
+             $image = new ImageResize($pathofimage);
+             $image->resize(700,700);
+             $image->save($pathofimage);
         $query="INSERT INTO recipes (user_id, title, description, category, cook_time, servings, ingredients, instructions, imagepath, slug) values(:user_id, :title, :description, :category, :cook_time, :servings, :ingredients, :instructions, :imagepath,:slug)";
         $statement=$db->prepare($query);
         $statement->bindValue(':user_id',$user_id);
@@ -130,8 +138,13 @@ $image_path="./pictures/";
 
 // Execute the INSERT prepared statement.
     $statement->execute();
-
-
+    unset($_SESSION['title']);
+    unset($_SESSION['description']);
+    unset($_SESSION['category']);
+    unset($_SESSION['cook_time']);
+    unset($_SESSION['servings']);
+    unset($_SESSION['ingredients']);
+    unset($_SESSION['instructions']);
 
    }else{
         $errors[]="file uploaded is not an image";
@@ -153,6 +166,13 @@ $statement->bindValue(':slug',$slug);
 
 // Execute the INSERT prepared statement.
     $statement->execute();
+      unset($_SESSION['title']);
+    unset($_SESSION['description']);
+    unset($_SESSION['category']);
+    unset($_SESSION['cook_time']);
+    unset($_SESSION['servings']);
+    unset($_SESSION['ingredients']);
+    unset($_SESSION['instructions']);
 
     }
 
@@ -200,13 +220,13 @@ $statement->execute();
                     <h2>Save your favorite receipe</h2>
                 </header>
         <label for="title">Recipe Title</label>
-        <input type="text" id="title" name="title" placeholder="Tomato sauce pasta " required>
+        <input type="text" id="title" name="title" placeholder="Tomato sauce pasta " value="<?= $_SESSION['title'] ?? '' ?>">
         <label for="description">Short Description</label>
-        <textarea id="description" name="description" rows="4" placeholder="e.g A zesty, light summer pasta featuring hand-picked basil and a hint of lemon.Best served chilled with white wine." required></textarea>
+        <textarea id="description" name="description" rows="4" placeholder="e.g A zesty, light summer pasta featuring hand-picked basil and a hint of lemon...."  value=""><?= $_SESSION['description'] ?? 'e.g A zesty, light summer pasta featuring hand-picked basil and a hint of lemon.' ?></textarea>
         <div class="short-input">
             <div class="category">
             <label for="category">Category</label>
-            <select id="category" name="category" style="width: 180px;" required>
+            <select id="category" name="category" style="width: 180px;" >
                 <option value="">Select Category</option>
                   <?php while(($category=$statement->fetch())): ?>
                     <option value="<?= $category['category'] ?>"><?= $category['category'] ?></option>
@@ -218,23 +238,24 @@ $statement->execute();
             </div>
             <div class="cook_time">
             <label for="cook_time">Cook Time (minutes)</label>
-            <input type="number" id="cook_time" name="cook_time" min="0" max="1000" style="width: 60px;" required>
+            <input type="number" id="cook_time" name="cook_time" min="0" max="1000" style="width: 60px;" value="<?= $_SESSION['cook_time'] ?? '' ?>" >
             </div>
             <div class="servings">
             <label for="servings">Servings</label>
-            <input type="number" id="servings" name="servings" min="1" max="100" width: 60px;" required>
+            <input type="number" id="servings" name="servings" min="1" max="100" style="width: 60px;" value="<?= $_SESSION['servings'] ?? '' ?>" >
             </div>
         </div>
         <label for="ingredients">Ingredients</label>
-        <textarea id="ingredients" name="ingredients" rows="4"  placeholder="e.g., 2 cups of flour" required></textarea>
+        <textarea id="ingredients" name="ingredients" rows="4"  placeholder="e.g., 2 cups of flour"  ><?= $_SESSION['ingredients'] ?? 'e.g., 2 cups of flour' ?> </textarea>
 
         <label for="instructions">Instructions</label>
-        <textarea id="instructions" name="instructions" rows="4" placeholder="Step 1: Preheat oven to 350°F..." required></textarea>
+        <textarea id="instructions" name="instructions" rows="4" placeholder="Step 1: Preheat oven to 350°F..." value="" ><?= $_SESSION['instructions'] ?? 'Step 1: Preheat oven to 350°F...' ?></textarea>
 
 
          <label for="image">Recipe Image</label>
          <input type="file" id="image" name="image">
         <button type="submit"onclick="return alert('You have Saved  A new Recipe Succesfully ')">Save Recipe</button>
+         <input type="submit" name="command" value="Clear">
 
     </form>
    <?php if (!empty($errors)): ?>

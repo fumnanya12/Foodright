@@ -1,32 +1,75 @@
 <?php
 require('connect.php');
 session_start();
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['login']);
+    
+}
+$base = '/Assignment/Finalproject/foodright';
 
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+// Current page
+$page = ($page && $page > 0) ? $page : 1;
+
+// Easy to change for testing pagination
+$resultsPerPage = 16;
+
+// Offset
+$offset = ($page - 1) * $resultsPerPage;
+
+
+
+$countQuery = "SELECT COUNT(*) FROM recipes ";
+$countStmt = $db->prepare($countQuery);
+
+$countStmt->execute();
+$totalResults = (int)$countStmt->fetchColumn();
+
+$totalPages = ($totalResults > 0) ? (int)ceil($totalResults / $resultsPerPage) : 1;
+// If page is bigger than total pages, reset it
+if ($page > $totalPages) {
+    $page = $totalPages;
+    $offset = ($page - 1) * $resultsPerPage;
+}
 if(isset($_GET['sort'])){
     $allowed_sorts = [
     'title_asc' => 'title ASC',
     'title_desc' => 'title DESC',
     'created_asc' => 'created_at ASC',
     'created_desc' => 'created_at DESC',
-    'category_Dinner' => 'Dinner',
-    'category_Lunch' => 'Lunch',
-    'category_Breakfast' => 'Breakfast',
-    'category_Dessert' => 'Dessert',
-    'category_Snack' => 'Snack'
+    'cooktime_desc'=> 'cook_time DESC',
+    'cooktime_asc'=> 'cook_time ASC'
+    // 'category_Dinner' => 'Dinner',
+    // 'category_Lunch' => 'Lunch',
+    // 'category_Breakfast' => 'Breakfast',
+    // 'category_Dessert' => 'Dessert',
+    // 'category_Snack' => 'Snack'
 ];
 $title=null;
 $date_label=null;
 $category_label=null;
-$sort=$_GET['sort']?? 'title_asc';
+$cooktime_label=null;
+$sort=filter_input(INPUT_GET,'sort',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? 'title_asc';
 $orderBy = $allowed_sorts[$sort] ?? 'title ASC';
+$rows=null;
 
 
-if($sort==='title_asc'||$sort==='title_desc'||$sort==='created_asc'||$sort==='created_desc'){
-    $query="SELECT * FROM recipes ORDER BY $orderBy";
+if($sort==='title_asc'||$sort==='title_desc'||$sort==='created_asc'||$sort==='created_desc'||$sort==='cooktime_desc'||$sort==='cooktime_asc'){
+
+
+
+
+    $query="SELECT * FROM recipes ORDER BY $orderBy LIMIT :limit OFFSET :offset";
       // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
+         $statement->bindValue(':limit', $resultsPerPage, PDO::PARAM_INT);
+    $statement->bindValue(':offset', $offset, PDO::PARAM_INT);  
      // Execution on the DB server is delayed until we execute().
      $statement->execute(); 
+    $rows = $statement->fetchAll();
+
      if($sort=== 'title_asc' ){
         $title='Title ASC ▲';
 
@@ -34,37 +77,71 @@ if($sort==='title_asc'||$sort==='title_desc'||$sort==='created_asc'||$sort==='cr
          $title='Title DESC ▼';
      } elseif($sort=== 'created_asc'){
         $date_label= 'Date Oldest ▲';
-     }else{
+     }else if($sort=== 'created_desc'){
         $date_label= 'Date Newest ▼';
 
      }
+     else if($sort=== 'cooktime_desc'){
+        $cooktime_label= 'CookTime DESC ▼';
+
+     }
+     else if($sort=== 'cooktime_asc'){
+        $cooktime_label= 'CookTime ASC ▲';
+
+     }
+
+
 
 }
-else if($sort==='category_Dinner'||$sort==='category_Lunch'||$sort==='category_Breakfast'||$sort==='category_Dessert'||$sort==='category_Snack'){
-    $query="SELECT * FROM recipes WHERE category= :category";
+// else if($sort==='category_Dinner'||$sort==='category_Lunch'||$sort==='category_Breakfast'||$sort==='category_Dessert'||$sort==='category_Snack'){
+//     $query="SELECT * FROM recipes WHERE category= :category";
 
-     // A PDO::Statement is prepared from the query.
-     $statement = $db->prepare($query);
-     $statement->bindValue(':category',$allowed_sorts[$sort]);
-     // Execution on the DB server is delayed until we execute().
-     $statement->execute(); 
-     $category_label="Category (".$allowed_sorts[$sort].")";
+//      // A PDO::Statement is prepared from the query.
+//      $statement = $db->prepare($query);
+//      $statement->bindValue(':category',$allowed_sorts[$sort]);
+//      // Execution on the DB server is delayed until we execute().
+//      $statement->execute(); 
+//      $category_label="Category (".$allowed_sorts[$sort].")";
+// }
 }
-}
+
+// $countQuery = "SELECT COUNT(*) FROM recipes ";
+// $countStmt = $db->prepare($countQuery);
+
+// $countStmt->execute();
+// $totalResults = (int)$countStmt->fetchColumn();
+
+// $totalPages = ($totalResults > 0) ? (int)ceil($totalResults / $resultsPerPage) : 1;
+// // If page is bigger than total pages, reset it
+// if ($page > $totalPages) {
+//     $page = $totalPages;
+//     $offset = ($page - 1) * $resultsPerPage;
+// }
+
 else{
-$query="SELECT * FROM recipes";
+
+$query="SELECT * FROM recipes LIMIT :limit OFFSET :offset";
     // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
+    $statement->bindValue(':limit', $resultsPerPage, PDO::PARAM_INT);
+    $statement->bindValue(':offset', $offset, PDO::PARAM_INT);     
      // Execution on the DB server is delayed until we execute().
      $statement->execute(); 
-
+     $rows = $statement->fetchAll();
 }
-$query_cat="SELECT * FROM category";
+
+
+$query_cat="SELECT * FROM category ORDER BY category ASC";
 $statement_cat = $db->prepare($query_cat);
 $statement_cat->execute(); 
-$rows = $statement->fetchAll();
+$categories=$statement_cat->fetchAll();
 
 $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
+$_SESSION['backlocation']="$base/allrecipes.php?page=$page";
+
+
+$currentKeyword = filter_input(INPUT_GET,'keyword',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? '';
+$currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? 'all';
 
 ?>
 <!DOCTYPE html>
@@ -88,7 +165,7 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
              </div>
             <ul>
                 <li><a href="index.php">Home</a></li>
-                <li><a href="allrecipes.php">Recipes </a></li>
+                <!-- <li><a href="allrecipes.php">Recipes </a></li> -->
                 <li><a href="#">Calorie calculator</a></li>
                 <li><a href="createrecipe.php">CreateReceipe</a></li>
                 <?php if(isset($_SESSION['username']['user_id'])): 
@@ -103,11 +180,18 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
         </nav>
     </header>
     <main class="allrecipe_section">
-        <section class="search-feature">
-            <div class="search-wrapper">
+    <section class="search-feature">
+    <form class="search-wrapper" action="search.php" method="get">
             <div class="InputContainer">
-            <input placeholder="Search.." id="input" class="input" name="text" type="text"> 
+            <input placeholder="Search.." id="input" class="input" name="keyword" type="text"> 
             </div>
+
+            <select name="category">
+            <option value="all">All Categories</option>
+            <?php foreach($categories as $cat): ?>
+                 <option value="<?= $cat['category'] ?>"><?= $currentCategory === $cat ? 'selected' : '' ?>> <?= $cat['category'] ?></option>
+                <?php endforeach ?>
+        </select>
                <div class="dropdownStyle">
 
                 <div class="optionStyle">Test</div>
@@ -118,22 +202,22 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
                 
             </div>  
             <button>Submit</button>
-                 </div>
+               </form>
         </section>
 
         <hr>
-        <?php if(isset($_SESSION['username']['user_id'])): ?>
         <section class="sort-section">
             <div class="sort-menu">
-               
+            <?php if(isset($_SESSION['username']['user_id'])): ?>
+
             <div class="sort-item">
             <button type="button" onclick="toggleDropdown('titleSort')"><?=$title ??'Title' ?></button>
             <div class="dropdown" id="titleSort">
                 <a href="allrecipes.php?sort=title_asc">A to Z</a>
                 <a href="allrecipes.php?sort=title_desc">Z to A</a>
             </div>
-        </div>
-
+            </div>
+                
         <div class="sort-item">
             <button type="button" onclick="toggleDropdown('dateSort')"><?=$date_label ??'Date' ?></button>
             <div class="dropdown" id="dateSort">
@@ -141,32 +225,36 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
                 <a href="allrecipes.php?sort=created_asc">Oldest</a>
             </div>
         </div>
-           <div class="sort-item">
-            <button type="button" onclick="toggleDropdown('category')"><?=$category_label ??'Category' ?></button>
-            <div class="dropdown" id="category">
-                <?php while(($category=$statement_cat->fetch())): ?>
-                    <a href="allrecipes.php?sort=category_<?= $category['category'] ?>"><?= $category['category'] ?></a>
-                <?php endwhile ?>
-             
-                
+
+            <div class="sort-item">
+            <button type="button" onclick="toggleDropdown('cookTime')"><?=$cooktime_label ??'CookTime' ?></button>
+            <div class="dropdown" id="cookTime">
+                <a href="allrecipes.php?sort=cooktime_desc">Highest</a>
+                <a href="allrecipes.php?sort=cooktime_asc">Lowest</a>
             </div>
-        </div>
-        <a href="allrecipes.php"><button type="button" >Clear</button></a>
+
+            </div>
+              <?php endif?>
+              <div class="sort-item"></div>
+            <button type="button" onclick="window.location.href='allrecipes.php'">Clear</button>
+            </div>
 
         </div>
+      
+
+          
 
         </section>
-        <?php endif?>
 
         <section>
             <h2>Food Right Recipes</h2>
+        
         <div id="fooddatabase">
             <?php if(count($rows)):?>
            <?php foreach($rows as $row): 
             $image = $row['imagepath'] ?? null;
 
         $image = ($image && $image !== 'No image')  ? $image : $placeholder;
-            
             ?>
             <aside>
                 
@@ -177,14 +265,39 @@ $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
                  <h3><?=$row['title'] ?></h3>
                 <p>Description</p>
                 <p><small><?=($row['description']) ?></small></p>
+                <p>CookTime: <?=($row['cook_time']) ?> Mins</p>
+                <p><small><?=($row['created_at']) ?></small></p>
+
                 </a>
             </aside>
 
             <?php endforeach ?>
+           
+
             <?php else :?>
                 <p>No result</p>
         <?php endif?>
         </div>
+         <?php if ($totalPages > 1): ?>
+            <nav class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="<?=$sort ? "?sort=$sort&page=$page - 1" : "?page=$page - 1"?>"> Previous </a>
+
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <?php if ($i == $page): ?>
+                        <strong><?= $i ?></strong>
+                    <?php else: ?>
+                        <a href="<?=$sort ? "?sort=$sort&page=$i " : "?page=$i " ?>"> <?= $i ?> </a>
+                    <?php endif; ?>
+                <?php endfor; ?>
+
+                <?php if ($page < $totalPages): ?>
+                    <a href="<?=$sort ? "?sort=$sort&page=$page + 1 " : "?page=$page + 1 "  ?>"> Next </a>
+                <?php endif; ?>
+            </nav>
+        <?php endif; ?>
         <hr>
         </section>
         

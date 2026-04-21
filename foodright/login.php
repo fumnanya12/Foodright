@@ -10,8 +10,10 @@ if(isset($_SESSION['registered'])){
     
 }
 if($_SERVER['REQUEST_METHOD']==='POST'){
-    if(isset($_POST['username'])&&isset($_POST['password'])){
     $username=filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $_SESSION['loginname']=$username;
+    if(isset($_POST['username'])&&isset($_POST['password'])){
     $trimed_username=trim($username);
     $password=$_POST['password'];
     $query = "SELECT username,user_id,useremail,role,password_hash FROM users WHERE username = :username LIMIT 1";
@@ -27,6 +29,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $_SESSION['username']['role']=$users['role'];
    // $result="You have logged in succesfully";
    $_SESSION['login']="Logged in successfully";
+   unset($_SESSION['loginname']);
 $redirect = $_SESSION['location'] ?? 'index.php';
 
     header("Location: $redirect");
@@ -84,9 +87,9 @@ $redirect = $_SESSION['location'] ?? 'index.php';
                     <p>Please enter your details to sign in</p>
                 </header>
                 <label for="username">Name:</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username..." required>
+                <input type="text" id="username" name="username" placeholder="Enter your username..."  value="<?= $_SESSION['loginname'] ?? '' ?>">
                  <label for="userpassword">Password:</label>
-                <input  type="password" id="password" name="password" required>
+                <input  type="password" id="password" name="password" >
                 <div id="runner">
                 <div class="remember">
                 <input type="checkbox" id="check" name="remember">
