@@ -8,7 +8,7 @@ if(isset($_SESSION['login'])){
     
 }
 
-$query="SELECT * FROM recipes LIMIT 20";
+$query="SELECT * FROM recipes LIMIT 10";
  // A PDO::Statement is prepared from the query.
      $statement = $db->prepare($query);
 
@@ -16,6 +16,19 @@ $query="SELECT * FROM recipes LIMIT 20";
      $statement->execute(); 
 $placeholder='/Assignment/Finalproject/foodright/pictures/placeholder.png';
 $rows = $statement->fetchAll();
+
+
+
+$query_cat="SELECT * FROM category ORDER BY category ASC";
+$statement_cat = $db->prepare($query_cat);
+$statement_cat->execute(); 
+$categories=$statement_cat->fetchAll();
+$base = '/Assignment/Finalproject/foodright';
+
+$currentKeyword = filter_input(INPUT_GET,'keyword',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? '';
+$currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? 'all';
+
+$_SESSION['backlocation']="$base/index.php";
 
 ?>
 <!DOCTYPE html>
@@ -56,11 +69,18 @@ $rows = $statement->fetchAll();
         </nav>
     </header>
     <main>
-        <section class="search-feature">
-            <div class="search-wrapper">
+         <section class="search-feature">
+    <form class="search-wrapper" action="search.php" method="get">
             <div class="InputContainer">
-            <input placeholder="Search.." id="input" class="input" name="text" type="text"> 
+            <input placeholder="Search.." id="input" class="input" name="keyword" type="text"> 
             </div>
+
+            <select name="category">
+            <option value="all">All Categories</option>
+            <?php foreach($categories as $cat): ?>
+                 <option value="<?= $cat['category'] ?>"><?= $currentCategory === $cat ? 'selected' : '' ?>> <?= $cat['category'] ?></option>
+                <?php endforeach ?>
+        </select>
                <div class="dropdownStyle">
 
                 <div class="optionStyle">Test</div>
@@ -71,7 +91,7 @@ $rows = $statement->fetchAll();
                 
             </div>  
             <button>Submit</button>
-                 </div>
+               </form>
         </section>
         <hr>
 
@@ -82,7 +102,7 @@ $rows = $statement->fetchAll();
             $image = $row['imagepath'] ?? null;
 
            $image = ($image && $image !== 'No image')  ? $image : $placeholder;
-            
+
             ?>
             <aside>
                 

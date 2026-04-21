@@ -6,6 +6,12 @@ if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !=
     header("Location: $base/index.php");
     exit;
 }
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['login']);
+    
+}
 $errors=[];
 
 $user=null;

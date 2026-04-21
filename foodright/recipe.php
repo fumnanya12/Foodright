@@ -1,6 +1,12 @@
 <?php
 require('connect.php');
 session_start();
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['login']);
+    
+}
 $errors=[];
 $id=filter_input(INPUT_GET, 'id', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 $slug=filter_input(INPUT_GET, 'slug', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
@@ -94,7 +100,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             <h2>Feature Receipes</h2>
             <aside class="meal-details">
                   <nav> 
-                    <a href="<?= $base ?>/index.php">home</a> 
+                    <a href="<?=$_SESSION['backlocation']?>">Back</a> 
                     <?php if(isset($_SESSION['username']['user_id']) && $_SESSION['username']['role'] == 'admin'):?>
                         <a href="<?= $base ?>/editrecipe.php?id=<?= $recipe['recipe_id'] ?>&slug=<?= $recipe['slug'] ?>">edit</a>                    
 

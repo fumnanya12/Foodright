@@ -5,7 +5,12 @@ session_start();
 $errors=[];
 $recipe = null;
 
-
+if(isset($_SESSION['login'])){
+    $msg = json_encode($_SESSION['login']);
+    echo "<script>alert($msg);</script>";
+     unset($_SESSION['login']);
+    
+}
 if (!isset($_SESSION['username']['user_id']) || $_SESSION['username']['role'] !== 'admin') {
     header("Location: $base/index.php");
     exit;
@@ -23,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $ingredients=trim(filter_input(INPUT_POST, 'ingredients', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
         $instructions=trim(filter_input(INPUT_POST, 'instructions', FILTER_SANITIZE_FULL_SPECIAL_CHARS)??'');
         $allowed_categories = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
-        $current_imagepath = $_POST['current_imagepath'] ?? 'No image';
+        $current_imagepath = filter_input(INPUT_POST,'current_imagepath',FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'No image';
 
    
    
@@ -72,6 +77,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     return $file_extension_is_valid && $mime_type_is_valid;
     }
+     $pathofimage="";
+        $image_path="./pictures/";
+        $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
+        $upload_error_detected= isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
+        
+      
+    if ($image_upload_detected) {
+          $image_filename       = $_FILES['image']['name'];
+        $temporary_image_path = $_FILES['image']['tmp_name'];
+        $new_image_path       = file_upload_path($image_filename);
+    if (!file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {
+        $errors[]= "Invalid file ext it has to be an image";
+        }
+              }
+       
+
     if(empty($errors)){
         $datetime = new DateTime('now', new DateTimeZone('America/Winnipeg'));
         $updatetime= $datetime->format('Y-m-d H:i:s');
@@ -100,21 +121,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 
         }
-        $pathofimage="";
-        $image_path="./pictures/";
-        $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
-        $upload_error_detected= isset($_FILES['image']) && ($_FILES['image']['error'] > 0);
+       
+  
 
-        if ($image_upload_detected) {
-
-        $image_filename       = $_FILES['image']['name'];
+        $image_filename       = str_replace(' ', '', $_FILES['image']['name']);
         $temporary_image_path = $_FILES['image']['tmp_name'];
         $new_image_path       = file_upload_path($image_filename);
         //$pathofimage="it uploaded";
-
+ if ($image_upload_detected) {
         if (file_is_an_image_or_pdf($temporary_image_path, $new_image_path)) {
             move_uploaded_file($temporary_image_path, $new_image_path);
-            $pathofimage=$image_path .$_FILES['image']['name'];
+           $pathofimage=$image_path . str_replace(' ', '', $_FILES['image']['name']);//$new_image_path;
+            
+
             $query="UPDATE recipes SET imagepath=:imagepath WHERE recipe_id = :id AND slug = :slug";
             $statement=$db->prepare($query);
             $statement->bindValue(':imagepath', $pathofimage);
@@ -123,9 +142,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $statement->execute();
 
         }
-        }
+ }
+        
 
-
+        
         header("Location: $base/{$id}/{$slug}/");
         exit();
     
@@ -261,9 +281,11 @@ $image = ($image && $image !== 'No image')  ? $image : $placeholder;
                 <div id="subinfo">
                     <p>Category:</p>
                     <select id="category" name="category" style="width: 180px;" required>
-                    <option value="">Select Category</option>
+                    <option value="<?= $recipe['category'] ?>"><?= $recipe['category'] ?></option>
                   <?php while(($category=$cat_statement->fetch())): ?>
+                    <?php if($category['category']!== $recipe['category'] ):?>
                     <option value="<?= $category['category'] ?>"><?= $category['category'] ?></option>
+                    <?php endif?>
 
                     <?php endwhile ?>
        
