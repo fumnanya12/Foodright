@@ -281,7 +281,7 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
          <?php if ($totalPages > 1): ?>
             <nav class="pagination">
                 <?php if ($page > 1): ?>
-                    <a href="<?=$sort ? "?sort=$sort&page=$page - 1" : "?page=$page - 1"?>"> Previous </a>
+                    <a href="<?=isset($sort) ? "?sort=$sort&page=". ($page - 1) : "?page=". ($page - 1) ?> "?>" Previous </a>
 
                 <?php endif; ?>
 
@@ -289,12 +289,12 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
                     <?php if ($i == $page): ?>
                         <strong><?= $i ?></strong>
                     <?php else: ?>
-                        <a href="<?=$sort ? "?sort=$sort&page=$i " : "?page=$i " ?>"> <?= $i ?> </a>
+                        <a href="<?=isset($sort)? "?sort=$sort&page=$i " : "?page=$i " ?>"> <?= $i ?> </a>
                     <?php endif; ?>
                 <?php endfor; ?>
 
                 <?php if ($page < $totalPages): ?>
-                    <a href="<?=$sort ? "?sort=$sort&page=$page + 1 " : "?page=$page + 1 "  ?>"> Next </a>
+                            <a href="<?= isset($sort) ? "?sort=$sort&page=" . ($page + 1) : "?page=" . ($page + 1) ?>">Next</a>
                 <?php endif; ?>
             </nav>
         <?php endif; ?>
