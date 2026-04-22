@@ -3,5 +3,5 @@ RewriteEngine On
 # Recipe page
 RewriteRule ^([0-9]+)/([A-Za-z0-9-]+)/?$ recipe.php?id=$1&slug=$2 [L,QSA]
 
-# Edit page (add /edit at the end)
+# 
 RewriteRule ^([0-9]+)/([A-Za-z0-9-]+)/?$ editrecipe.php?id=$1&slug=$2 [L,QSA]
