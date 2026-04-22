@@ -593,6 +593,11 @@ header.homepage {
   display: block;
   margin: 0 auto;
 }
+
+.Result_sub{
+  display: flex;
+  gap: 15px;
+}
 .pagination {
   margin-top: 20px;
   text-align: center;

@@ -8,13 +8,13 @@ if(isset($_SESSION['login'])){
     
 }
 $base = '/Assignment/Finalproject/foodright';
-
+$resultno=filter_input(INPUT_GET, 'result', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 // Current page
 $page = ($page && $page > 0) ? $page : 1;
 
 // Easy to change for testing pagination
-$resultsPerPage = 16;
+$resultsPerPage = ($resultno && $resultno > 0) ? $resultno : 8;// Offset
 
 // Offset
 $offset = ($page - 1) * $resultsPerPage;
@@ -54,6 +54,7 @@ $cooktime_label=null;
 $sort=filter_input(INPUT_GET,'sort',FILTER_SANITIZE_FULL_SPECIAL_CHARS)?? 'title_asc';
 $orderBy = $allowed_sorts[$sort] ?? 'title ASC';
 $rows=null;
+$_SESSION['lastsort']="?sort=" .$sort;
 
 
 if($sort==='title_asc'||$sort==='title_desc'||$sort==='created_asc'||$sort==='created_desc'||$sort==='cooktime_desc'||$sort==='cooktime_asc'){
@@ -185,7 +186,7 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
             <div class="InputContainer">
             <input placeholder="Search.." id="input" class="input" name="keyword" type="text"> 
             </div>
-
+             <div class="Result_sub">    
             <select name="category">
             <option value="all">All Categories</option>
             <?php foreach($categories as $cat): ?>
@@ -201,6 +202,16 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
                 <div class="optionStyle">Test</div>
                 
             </div>  
+            
+            <select name="result">
+            <option value="0">No of Result</option>
+
+            <option value="12">12</option>
+            <option value="16">16</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+        </select>
+        </div>   
             <button>Submit</button>
                </form>
         </section>
@@ -235,9 +246,24 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
 
             </div>
               <?php endif?>
+               <div class="sort-item">
+            <button type="button" onclick="toggleDropdown('noresult')">noresult</button>
+            <div class="dropdown" id="noresult">
+                
+                    <a href="<?=isset($sort) ? "?sort=$sort&result=12": "?result=12"?>">12</a>
+                    <a href="<?=isset($sort) ? "?sort=$sort&result=16": "?result=16"?>">16</a>
+                    <a href="<?=isset($sort) ? "?sort=$sort&result=20": "?result=20"?>">20</a>
+                    <a href="<?=isset($sort) ? "?sort=$sort&result=24": "?result=24"?>">24</a>
+           
+            
+                
+            </div>
+        </div>
               <div class="sort-item"></div>
             <button type="button" onclick="window.location.href='allrecipes.php'">Clear</button>
             </div>
+
+
 
         </div>
       
@@ -281,7 +307,7 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
          <?php if ($totalPages > 1): ?>
             <nav class="pagination">
                 <?php if ($page > 1): ?>
-                    <a href="<?=$sort ? "?sort=$sort&page=$page - 1" : "?page=$page - 1"?>"> Previous </a>
+                    <a href="<?=isset($sort) ? "?sort=$sort&page=". ($page - 1) : "?page=". ($page - 1) ?> "?>" Previous </a>
 
                 <?php endif; ?>
 
@@ -289,12 +315,12 @@ $currentCategory = filter_input(INPUT_GET,'category',FILTER_SANITIZE_FULL_SPECIA
                     <?php if ($i == $page): ?>
                         <strong><?= $i ?></strong>
                     <?php else: ?>
-                        <a href="<?=$sort ? "?sort=$sort&page=$i " : "?page=$i " ?>"> <?= $i ?> </a>
+                        <a href="<?=isset($sort)? "?sort=$sort&page=$i " : "?page=$i " ?>"> <?= $i ?> </a>
                     <?php endif; ?>
                 <?php endfor; ?>
 
                 <?php if ($page < $totalPages): ?>
-                    <a href="<?=$sort ? "?sort=$sort&page=$page + 1 " : "?page=$page + 1 "  ?>"> Next </a>
+                            <a href="<?= isset($sort) ? "?sort=$sort&page=" . ($page + 1) : "?page=" . ($page + 1) ?>">Next</a>
                 <?php endif; ?>
             </nav>
         <?php endif; ?>
